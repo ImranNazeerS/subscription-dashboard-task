@@ -1,15 +1,30 @@
 {
-    "name": "subscription-dashboard-task",
-    "version": "1.0.0",
-    "description": "mini SaaS admin dashboard",
-    "type": "module",
-    "main": "server/server.js",
-    "scripts": {
-        "dev": "nodemon server/server.js --ignore client/",
-        "start": "node server/server.js",
-        "build": "cd client && npm install && npm run build && cd ../server && npm install"
-    },
-    "keywords": [],
-    "author": "ImranNazeerS",
-    "license": "ISC"
+  "name": "subscription-dashboard-task",
+  "version": "1.0.0",
+  "description": "mini SaaS admin dashboard",
+  "type": "module",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "nodemon server/server.js --ignore client/",
+    "start": "node server/server.js",
+    "seed:plans": "node seed/seedPlans.js",
+    "seed:admin": "node seed/seedAdmin.js",
+    "build": "npm install && npm install --prefix client && npm run build --prefix client"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "joi": "^18.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.0",
+    "morgan": "^1.10.1",
+    "razorpay": "^2.9.6",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
