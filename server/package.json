@@ -1,4 +1,12 @@
 {
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed:plans": "node seed/seedPlans.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -7,8 +15,9 @@
     "express": "^5.2.1",
     "joi": "^18.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.6.3",
+    "mongoose": "^8.24.0",
     "morgan": "^1.10.1",
+    "razorpay": "^2.9.6",
     "uuid": "^14.0.0"
   },
   "devDependencies": {

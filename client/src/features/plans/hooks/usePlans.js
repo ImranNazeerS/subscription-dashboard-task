@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
-import { fetchPlans, subscribeToPlan } from '../api/plans.api';
+import { fetchPlans, createSubscriptionOrder, verifySubscriptionPayment } from '../api/plans.api';
 import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../../store/authStore';
+
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export const usePlans = () => {
   const [plans, setPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const user = useAuthStore(state => state.user);
 
   useEffect(() => {
     const getPlans = async () => {
@@ -33,12 +45,65 @@ export const usePlans = () => {
   }, []);
 
   const handleSubscribe = async (planId) => {
+    setIsLoading(true);
     try {
-      await subscribeToPlan(planId);
-      navigate('/dashboard');
+      const res = await loadRazorpay();
+      if (!res) {
+        alert('Razorpay SDK failed to load. Are you online?');
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 1: Create subscription order via backend API
+      const data = await createSubscriptionOrder(planId);
+
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Subscription Task',
+        description: 'Plan Subscription',
+        order_id: data.orderId,
+        prefill: {
+          email: user?.email || '',
+          name: user?.name || '',
+        },
+        theme: { color: '#FFB452' },
+        handler: async function (response) {
+          setIsLoading(true);
+          try {
+            // Step 3: Verify via backend API
+            await verifySubscriptionPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              planId
+            });
+
+            alert('Payment successful!');
+            navigate('/dashboard');
+          } catch (verifyError) {
+            alert(verifyError.response?.data?.message || 'Payment verification error');
+          } finally {
+            setIsLoading(false);
+          }
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+
+      paymentObject.on('payment.failed', function (response) {
+        alert(response.error.description || 'Payment could not be completed');
+        setIsLoading(false);
+      });
+
+      setIsLoading(false);
+      paymentObject.open();
+
     } catch (err) {
-      console.error('Failed to subscribe', err);
-      alert('Subscription failed. Please try again.');
+      console.error('Failed to process payment', err);
+      alert('Error processing payment. Please try again.');
+      setIsLoading(false);
     }
   };
 

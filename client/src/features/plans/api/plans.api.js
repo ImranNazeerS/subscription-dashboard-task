@@ -5,7 +5,12 @@ export const fetchPlans = async () => {
   return response.data.plans;
 };
 
-export const subscribeToPlan = async (planId) => {
-  const response = await api.post(`/subscribe/${planId}`);
+export const createSubscriptionOrder = async (planId) => {
+  const response = await api.post('/create-order', { planId });
+  return response.data;
+};
+
+export const verifySubscriptionPayment = async (data) => {
+  const response = await api.post('/verify', data);
   return response.data;
 };
