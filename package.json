@@ -1,0 +1,15 @@
+{
+    "name": "subscription-dashboard-task",
+    "version": "1.0.0",
+    "description": "mini SaaS admin dashboard",
+    "type": "module",
+    "main": "server/server.js",
+    "scripts": {
+        "dev": "nodemon server/server.js --ignore client/",
+        "start": "node server/server.js",
+        "build": "cd client && npm install && npm run build && cd ../server && npm install"
+    },
+    "keywords": [],
+    "author": "ImranNazeerS",
+    "license": "ISC"
+}

@@ -19,7 +19,7 @@ const getRazorpayInstance = () => {
 
 export const createOrder = async (req, res) => {
   try {
-    const { planId, currency = 'USD' } = req.body; // or INR depending on requirements
+    const { planId, currency = 'INR' } = req.body; 
     
     if (!planId) {
       return res.status(400).json({ status: false, message: "Plan ID is required" });
@@ -30,10 +30,66 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ status: false, message: "Invalid plan selected" });
     }
 
+    let amountToPay = plan.price;
+
+    // Round to 2 decimal places to avoid floating point issues
+    amountToPay = Math.round(amountToPay * 100) / 100;
+
+    // If the plan is inherently free (e.g. price is 0), bypass Razorpay.
+    if (amountToPay < 1) {
+      const startDate = new Date();
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + plan.duration);
+
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      try {
+        await Subscription.updateMany(
+          { user: req.user._id, status: 'active' },
+          { $set: { status: 'cancelled' } },
+          { session }
+        );
+
+        const subscription = await Subscription.create([{
+          user: req.user._id,
+          plan: planId,
+          start_date: startDate,
+          end_date: endDate,
+          status: 'active',
+        }], { session });
+
+        await Payment.create([{
+          user: req.user._id,
+          plan: planId,
+          subscription: subscription[0]._id,
+          razorpay_order_id: 'free_switch',
+          razorpay_payment_id: 'free_switch',
+          amount: 0,
+          status: 'success',
+        }], { session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.status(200).json({
+          status: true,
+          freeSwitch: true,
+          message: "Free plan activated successfully.",
+          subscription: subscription[0]
+        });
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Error in free switch transaction:", error);
+        return res.status(500).json({ status: false, message: "Error saving subscription data during switch" });
+      }
+    }
+
     const options = {
-      amount: plan.price * 100, // Razorpay amount in smallest unit (e.g. cents/paise)
+      amount: Math.round(amountToPay * 100), // Razorpay amount in smallest unit (e.g. cents/paise)
       currency,
-      receipt: `receipt_${req.user._id}_${Date.now()}`,
+      receipt: `sub_${Math.random().toString(36).substring(2, 12)}`,
       payment_capture: 1,
     };
 
@@ -42,6 +98,7 @@ export const createOrder = async (req, res) => {
     
     return res.status(200).json({
       status: true,
+      freeSwitch: false,
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,

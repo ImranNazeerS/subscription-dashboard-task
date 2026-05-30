@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchPlans, createSubscriptionOrder, verifySubscriptionPayment } from '../api/plans.api';
+import { fetchPlans, createSubscriptionOrder, verifySubscriptionPayment, fetchMySubscription } from '../api/plans.api';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/authStore';
 
@@ -15,20 +15,25 @@ const loadRazorpay = () => {
 
 export const usePlans = () => {
   const [plans, setPlans] = useState([]);
+  const [currentSubscription, setCurrentSubscription] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const user = useAuthStore(state => state.user);
 
   useEffect(() => {
-    const getPlans = async () => {
+    const getData = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await fetchPlans();
-        setPlans(data || []);
+        const [plansData, subscriptionData] = await Promise.all([
+          fetchPlans(),
+          fetchMySubscription().catch(() => null) // Ignore error if not subscribed
+        ]);
+        setPlans(plansData || []);
+        setCurrentSubscription(subscriptionData);
       } catch (err) {
-        console.error('Failed to fetch plans', err);
+        console.error('Failed to fetch data', err);
         setError(err.response?.data?.message || 'Failed to load plans');
         // Fallback dummy data if backend is not ready
         setPlans([
@@ -41,21 +46,29 @@ export const usePlans = () => {
       }
     };
 
-    getPlans();
+    getData();
   }, []);
 
   const handleSubscribe = async (planId) => {
     setIsLoading(true);
     try {
+      // Step 1: Create subscription order via backend API
+      const data = await createSubscriptionOrder(planId);
+
+      // Free switch (Downgrade or fully prorated upgrade)
+      if (data.freeSwitch) {
+        alert(data.message || 'Switched plan successfully!');
+        navigate('/dashboard');
+        return;
+      }
+
+      // Normal Razorpay flow
       const res = await loadRazorpay();
       if (!res) {
         alert('Razorpay SDK failed to load. Are you online?');
         setIsLoading(false);
         return;
       }
-
-      // Step 1: Create subscription order via backend API
-      const data = await createSubscriptionOrder(planId);
 
       const options = {
         key: data.key,
@@ -84,19 +97,18 @@ export const usePlans = () => {
             navigate('/dashboard');
           } catch (verifyError) {
             alert(verifyError.response?.data?.message || 'Payment verification error');
-          } finally {
             setIsLoading(false);
           }
         },
       };
 
       const paymentObject = new window.Razorpay(options);
-
+      
       paymentObject.on('payment.failed', function (response) {
         alert(response.error.description || 'Payment could not be completed');
         setIsLoading(false);
       });
-
+      
       setIsLoading(false);
       paymentObject.open();
 
@@ -107,5 +119,5 @@ export const usePlans = () => {
     }
   };
 
-  return { plans, isLoading, error, handleSubscribe };
+  return { plans, currentSubscription, isLoading, error, handleSubscribe };
 };

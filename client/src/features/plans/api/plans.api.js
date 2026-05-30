@@ -14,3 +14,8 @@ export const verifySubscriptionPayment = async (data) => {
   const response = await api.post('/verify', data);
   return response.data;
 };
+
+export const fetchMySubscription = async () => {
+  const response = await api.get('/my-subscription');
+  return response.data.subscription;
+};
