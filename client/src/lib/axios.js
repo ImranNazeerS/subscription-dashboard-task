@@ -11,7 +11,9 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     
     // Attempt to refresh if 401 and we haven't already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAuthRoute = originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/register');
+    
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
       try {
         await axios.post(
