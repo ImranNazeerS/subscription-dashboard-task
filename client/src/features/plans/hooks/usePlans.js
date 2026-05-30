@@ -50,6 +50,11 @@ export const usePlans = () => {
   }, []);
 
   const handleSubscribe = async (planId) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
     setIsLoading(true);
     try {
       // Step 1: Create subscription order via backend API
