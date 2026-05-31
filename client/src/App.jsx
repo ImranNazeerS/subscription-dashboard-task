@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import useThemeStore from './store/themeStore';
 import Layout from './shared/components/Layout';
 import Login from './features/auth/pages/Login';
 import Register from './features/auth/pages/Register';
@@ -9,6 +11,14 @@ import AdminSubscriptions from './features/admin/pages/AdminSubscriptions';
 import { RequireAuth, RequireAdmin } from './routes/ProtectedRoutes';
 
 function App() {
+  const { theme } = useThemeStore();
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+  }, [theme]);
+
   return (
     <BrowserRouter>
       <Routes>

@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #D7DEE8;
-  --color-surface: #FFFFFF;
-  --color-surface-secondary: #F7F9FC;
+  --color-background: var(--bg-color);
+  --color-surface: var(--surface-color);
+  --color-surface-secondary: var(--surface-secondary-color);
   
-  --color-card-dark: #080808;
-  --color-card-dark-secondary: #1A1A1A;
+  --color-card-dark: var(--card-dark-color);
+  --color-card-dark-secondary: var(--card-dark-secondary-color);
 
-  --color-text-primary: #080808;
-  --color-text-secondary: #535353;
-  --color-text-muted: #8A8A8B;
-  --color-text-inverse: #FFFFFF;
+  --color-text-primary: var(--text-primary-color);
+  --color-text-secondary: var(--text-secondary-color);
+  --color-text-muted: var(--text-muted-color);
+  --color-text-inverse: var(--text-inverse-color);
 
-  --color-border: #E5E7EB;
-  --color-border-light: #F1F5F9;
+  --color-border: var(--border-color);
+  --color-border-light: var(--border-light-color);
 
-  --color-button-primary: #080808;
-  --color-button-primary-text: #FFFFFF;
-  --color-button-secondary: #FFFFFF;
-  --color-button-secondary-text: #080808;
+  --color-button-primary: var(--button-primary-color);
+  --color-button-primary-text: var(--button-primary-text-color);
+  --color-button-secondary: var(--button-secondary-color);
+  --color-button-secondary-text: var(--button-secondary-text-color);
 
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
+  --color-success: var(--success-color);
+  --color-warning: var(--warning-color);
+  --color-danger: var(--danger-color);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -38,6 +38,45 @@
 }
 
 @layer base {
+  :root {
+    --bg-color: #D7DEE8;
+    --surface-color: #FFFFFF;
+    --surface-secondary-color: #F7F9FC;
+    --card-dark-color: #080808;
+    --card-dark-secondary-color: #1A1A1A;
+    --text-primary-color: #080808;
+    --text-secondary-color: #535353;
+    --text-muted-color: #8A8A8B;
+    --text-inverse-color: #FFFFFF;
+    --border-color: #E5E7EB;
+    --border-light-color: #F1F5F9;
+    --button-primary-color: #080808;
+    --button-primary-text-color: #FFFFFF;
+    --button-secondary-color: #FFFFFF;
+    --button-secondary-text-color: #080808;
+    --success-color: #22C55E;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+  }
+
+  .dark {
+    --bg-color: #0a0a0a;
+    --surface-color: #111111;
+    --surface-secondary-color: #1a1a1a;
+    --card-dark-color: #FFFFFF;
+    --card-dark-secondary-color: #F7F9FC;
+    --text-primary-color: #FFFFFF;
+    --text-secondary-color: #a3a3a3;
+    --text-muted-color: #737373;
+    --text-inverse-color: #080808;
+    --border-color: #262626;
+    --border-light-color: #1a1a1a;
+    --button-primary-color: #FFFFFF;
+    --button-primary-text-color: #080808;
+    --button-secondary-color: #1a1a1a;
+    --button-secondary-text-color: #FFFFFF;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-text-primary);

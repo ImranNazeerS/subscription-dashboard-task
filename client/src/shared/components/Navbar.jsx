@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import useThemeStore from '../../store/themeStore';
 import Button from './Button';
-import { LogOut, User, LayoutDashboard, CreditCard } from 'lucide-react';
+import { LogOut, User, LayoutDashboard, CreditCard, Moon, Sun } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,6 +26,10 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={toggleTheme} className="text-text-secondary hover:text-text-primary">
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </Button>
+
           {isAuthenticated ? (
             <>
               <Link to="/plans" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5">
