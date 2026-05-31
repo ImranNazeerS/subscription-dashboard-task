@@ -23,6 +23,7 @@
     "morgan": "^1.10.1",
     "razorpay": "^2.9.6",
     "uuid": "^14.0.0",
+    "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0"
   },
   "devDependencies": {

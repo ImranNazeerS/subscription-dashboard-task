@@ -27,7 +27,7 @@ export default function PlanCard({ plan, isPopular, isCurrentPlan, buttonText, o
         {/* Plan name */}
         <p className={cn(
           'text-[10px] font-bold uppercase tracking-[0.15em] mb-5',
-          isPopular ? 'text-white/40' : 'text-text-muted'
+          isPopular ? 'text-text-inverse/40' : 'text-text-muted'
         )}>
           {plan.name}
         </p>
@@ -36,13 +36,13 @@ export default function PlanCard({ plan, isPopular, isCurrentPlan, buttonText, o
         <div className="flex items-start gap-0.5 mb-1">
           <span className={cn(
             'text-lg font-bold mt-2',
-            isPopular ? 'text-white/50' : 'text-text-muted'
+            isPopular ? 'text-text-inverse/50' : 'text-text-muted'
           )}>
             ₹
           </span>
           <span className={cn(
             'text-5xl font-black tracking-tighter leading-none',
-            isPopular ? 'text-white' : 'text-text-primary'
+            isPopular ? 'text-text-inverse' : 'text-text-primary'
           )}>
             {plan.price.toLocaleString('en-IN')}
           </span>
@@ -50,7 +50,7 @@ export default function PlanCard({ plan, isPopular, isCurrentPlan, buttonText, o
 
         <p className={cn(
           'text-xs mb-6',
-          isPopular ? 'text-white/35' : 'text-text-muted'
+          isPopular ? 'text-text-inverse/35' : 'text-text-muted'
         )}>
           per {plan.duration} days
         </p>
@@ -58,7 +58,7 @@ export default function PlanCard({ plan, isPopular, isCurrentPlan, buttonText, o
         {/* Divider */}
         <div className={cn(
           'h-px mb-6',
-          isPopular ? 'bg-white/10' : 'bg-border'
+          isPopular ? 'bg-text-inverse/10' : 'bg-border'
         )} />
 
         {/* Features */}
@@ -73,7 +73,7 @@ export default function PlanCard({ plan, isPopular, isCurrentPlan, buttonText, o
               </span>
               <span className={cn(
                 'text-sm leading-snug',
-                isPopular ? 'text-white/65' : 'text-text-secondary'
+                isPopular ? 'text-text-inverse/65' : 'text-text-secondary'
               )}>
                 {feature}
               </span>
